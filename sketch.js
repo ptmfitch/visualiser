@@ -75,7 +75,9 @@ let particleParams = {
 
   life: 255,
   lifeMin: 127,
-  lifeMax: 1027
+  lifeMax: 1027,
+
+  horizontalAcceleration: 50
 
 }
 
@@ -170,7 +172,7 @@ function draw() {
     if (particleParams.on) {
       if (SONG.isPlaying()) {
         for (var i = 0; i < particleParams.frequency; i++) {
-          PARTICLES.push(ringParticle(waveParams.ringRadius))
+          PARTICLES.push(starwarsParticle(waveParams.ringRadius))
         }
       }
       for (var i = PARTICLES.length - 1; i >= 0; i--) {
@@ -193,7 +195,7 @@ function draw() {
       beginShape()
       for (var i = 0; i <= 180; i += waveParamsPreset.smooth) {
         var index = floor(map(i, 0, 180, 0, wave.length - 1))
-        var r = map(wave[index], -1, 1, waveParams.ringRadius - waveParams.waveHeight, waveParams.ringRadius + waveParams.waveHeight)
+        var r = map(wave[index], -1, 1, waveParams.ringRadius - waveParams.waveHeight, waveParams.ringRadius + waveParams.waveHeight) + amp
         var x = r * sin(i) * t
         var y = r * cos(i)
         vertex(x, y)
@@ -204,6 +206,23 @@ function draw() {
     pop()
 
   } else if(waveParams.type == 'line') {
+
+    // Displays fading particles emerging from edge of screen
+    if (particleParams.on) {
+      if (SONG.isPlaying()) {
+        for (var i = 0; i < particleParams.frequency; i++) {
+          PARTICLES.push(horizontalParticle(-HALF_WIDTH))
+        }
+      }
+      for (var i = PARTICLES.length - 1; i >= 0; i--) {
+        if (!PARTICLES[i].isOutOfBounds(HALF_WIDTH, HALF_HEIGHT)) {
+          PARTICLES[i].update(amp)
+          PARTICLES[i].show()
+        } else {
+          PARTICLES.splice(i, 1)
+        }
+      }
+    }
     
     push()
 
@@ -312,6 +331,17 @@ function toggleGui() {
 }
 
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight)
+  BG = loadImage(bgParams.url, function() {
+    BG.filter(BLUR, bgParamsPreset.blur)
+    image(BG, 0, 0, width + bgParams.zoom * 1.6, height + bgParams.zoom * 0.9)
+  })
+  HALF_HEIGHT = height / 2
+  HALF_WIDTH = width / 2
+}
+
+
 function fadeBackground(amp) {
   var alpha = map(amp, 0, 255, 180, 150)
   fill(0, alpha)
@@ -321,7 +351,10 @@ function fadeBackground(amp) {
 
 function reloadBackground() {
   if(bgParams.url != prevBgUrl) {
-    BG = loadImage(bgParams.url)
+    BG = loadImage(bgParams.url, function() {
+      BG.filter(BLUR, bgParamsPreset.blur)
+      image(BG, 0, 0, width + bgParams.zoom * 1.6, height + bgParams.zoom * 0.9)
+    })
     prevBgUrl = bgParams.url
   }
 }
