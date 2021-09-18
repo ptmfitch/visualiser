@@ -1,8 +1,39 @@
+let GUI_PARTICLES
+
+let PARTICLE_PARAMS_PRESET = {
+  accMin: 0.00001,
+  accMax: 0.0001,
+  velMax: 3
+}
+
+let PARTICLE_PARAMS = {
+  
+  size: 5,
+  sizeMin: 1,
+  sizeMax: 10,
+
+  color: [255, 17, 153],
+
+  frequency: 5,
+  frequencyMin: 1,
+  frequencyMax: 10,
+
+  life: 255,
+  lifeMin: 127,
+  lifeMax: 1027,
+
+  horizontalAcceleration: 50
+
+}
+
+
 class Particle {
-    constructor(pos, acc, size, col, terVel, life, ampResponsive=true, invertFade=false) {
+
+
+    constructor(pos, vel, acc, size, col, terVel, life, ampResponsive=true, invertFade=false) {
         this.pos = pos
         this.acc = acc 
-        this.vel = createVector(0, 0)
+        this.vel = vel
         this.terVel = terVel
         this.ampResponsive = ampResponsive
 
@@ -12,11 +43,13 @@ class Particle {
         this.life = life
         this.invertFade = invertFade
     }
-    update(amp) {
+
+
+    update() {
         this.vel.add(this.acc)
         this.vel.limit(this.terVel)
         if(this.ampResponsive) {
-            this.pos.add(this.vel.copy().mult(amp / 50))
+            this.pos.add(this.vel.copy().mult(BASS_AMP / 64))
         } else {
             this.pos.add(this.vel)
         }
@@ -28,6 +61,8 @@ class Particle {
         }
         
     }
+
+
     isOutOfBounds(width, height) {
         return this.pos.x < -width 
         || this.pos.x > width 
@@ -35,67 +70,58 @@ class Particle {
         || this.pos.y > height
         || this.life < 0
     }
+
+
     show() {
         noStroke()
         fill(this.col)
         ellipse(this.pos.x, this.pos.y, this.size)
     }
+
+
 }
 
-function ringParticle(radius) {
-    let pos = p5.Vector.random2D().mult(radius)
-    let acc = pos.copy().mult( // Accelerate away from center
-        random(particleParamsPreset.accMin, particleParamsPreset.accMax)
-    ) 
+
+function ringParticle() {
+    let pos = p5.Vector.random2D().mult(WAVE_PARAMS.ringRadius + BASS_AMP)
+    let acc = pos.copy().mult(random(PARTICLE_PARAMS_PRESET.accMin, PARTICLE_PARAMS_PRESET.accMax))
+    let vel = acc.copy().mult(100)
     return new Particle(
-        pos, 
-        acc, 
-        particleParams.size,
-        particleParams.color,
-        particleParamsPreset.velMax,
-        particleParams.life
+        pos, vel, acc, 
+        PARTICLE_PARAMS.size,
+        PARTICLE_PARAMS.color,
+        PARTICLE_PARAMS_PRESET.velMax,
+        PARTICLE_PARAMS.life
     )
 }
 
-function horizontalParticle(x) {
+
+function horizontalParticle() {
     return new Particle(
-        new p5.Vector(x, random(-HALF_HEIGHT, HALF_HEIGHT)),
-        new p5.Vector(random(particleParamsPreset.accMin, particleParamsPreset.accMax), 0)
-            .mult(particleParams.horizontalAcceleration),
-        particleParams.size,
-        particleParams.color,
-        particleParamsPreset.velMax,
-        particleParams.life
+        new p5.Vector(-HALF_WIDTH, random(-HALF_HEIGHT, HALF_HEIGHT)),
+        createVector(0, 0),
+        new p5.Vector(random(PARTICLE_PARAMS_PRESET.accMin, PARTICLE_PARAMS_PRESET.accMax), 0)
+            .mult(PARTICLE_PARAMS.horizontalAcceleration),
+        PARTICLE_PARAMS.size,
+        PARTICLE_PARAMS.color,
+        PARTICLE_PARAMS_PRESET.velMax,
+        PARTICLE_PARAMS.life
     )
 }
 
-function randomEdgeVector() {
-    let dir = floor(random(0,4)) // Pick a random direction
-    let edge
-    if(dir < 1) { // Left
-        edge = new p5.Vector(-HALF_WIDTH, random(-HALF_HEIGHT, HALF_HEIGHT))
-    } else if(dir < 2) { // Up
-        edge = new p5.Vector(random(-HALF_WIDTH, HALF_WIDTH), -HALF_HEIGHT)
-    } else if (dir < 3) { // Right
-        edge = new p5.Vector(HALF_WIDTH, random(-HALF_HEIGHT, HALF_HEIGHT))
-    } else { // Down
-        edge = new p5.Vector(random(-HALF_WIDTH, HALF_WIDTH), HALF_HEIGHT)
-    }
-    return edge
-}
 
 function starwarsParticle() {
-    let pos = new p5.Vector(0, 0)
-    let acc = p5.Vector.random2D().mult(random(particleParamsPreset.accMin, particleParamsPreset.accMax) * 150)
-    // let acc = edge.copy().sub(pos.copy()).mult(random(0.00001, 0.00005))
+    let pos = new p5.Vector(random(-10, 10), random(-10, 10))
+    let acc = p5.Vector.random2D().mult(random(PARTICLE_PARAMS_PRESET.accMin, PARTICLE_PARAMS_PRESET.accMax) * 200)
+    let vel = acc.copy().mult(100)
     return new Particle(
-        pos,
-        acc,
+        pos, vel, acc,
         3,
         [255, 255, 255],
-        8,
+        16,
         750,
         false,
         true
     )
 }
+
