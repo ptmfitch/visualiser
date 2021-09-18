@@ -2,10 +2,21 @@ let GUI_VISIBLE = true
 let GUI_WIDTH = 200
 let GUI_PADDING = 10
 
+let BACKGROUND
+let PARTICLE_EMITTER
+let WAVE
+
+
 // SONG
 
+let SONGS = [
+  'Catmosphere - Candy-Coloured Sky.mp3',
+  'JJD - A New Adventure (feat. Molly Ann) [NCS Release].mp3',
+  'Papa Khan - Wounds [NCS Release].mp3',
+  'Rival - Throne (ft. Neoni) (Lost Identities Remix) [NCS Release].mp3'
+]
 let SONG
-let SONG_URL = 'assets/Catmosphere - Candy-Coloured Sky.mp3'
+let SONG_URL
 
 let FFT
 let FFT_SMOOTHING = 0.3
@@ -16,42 +27,14 @@ let BASS_AMP
 
 let PLAY_BUTTON
 
-// BACKGROUND
-
-let GUI_BACKGROUND
-
-let BG
-
-let BG_PARAMS_PRESET = {
-  bassFreqMin: 90,
-  bassFreqMax: 200,
-  shakeAmpMin: 250,
-  blur: 12
-}
-
-let BG_PARAMS = {
-  shake: 0.1,
-  shakeMin: 0,
-  shakeMax: 2,
-  shakeStep: 0.1,
-
-  zoom: 100,
-  zoomMin: 0,
-  zoomMax: 500,
-
-  fade: true,
-
-  url: 'https://images.pexels.com/photos/2763927/pexels-photo-2763927.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
-}
-let BG_PREV = BG_PARAMS.url
-
 let HALF_HEIGHT
 let HALF_WIDTH
 
 
 function preload() {
+  SONG_URL = 'assets/' + random(SONGS)
   SONG = loadSound(SONG_URL)
-  BG = loadImage(BG_PARAMS.url)
+  IMAGE = loadImage(BG_CONFIG.url)
 }
 
 
@@ -70,10 +53,11 @@ function setup() {
 
   FFT = new p5.FFT(FFT_SMOOTHING)
 
-  BG.filter(BLUR, BG_PARAMS_PRESET.blur)
+  IMAGE.filter(BLUR, BG_PRESET.blur)
 
-  resetParticleEmitter({value: PARTICLE_TYPES[0]})
-  resetWave({value: WAVE_TYPES[0]})
+  setBackground()
+  setParticleEmitter({value: PARTICLE_TYPES[0]})
+  setWave({value: WAVE_TYPES[0]})
 
   noLoop()
 
@@ -82,26 +66,15 @@ function setup() {
 
 function draw() {
 
-  background(0)
-
   SPECTRUM = FFT.analyze()
   WAVEFORM = FFT.waveform()
-  BASS_AMP = FFT.getEnergy(BG_PARAMS_PRESET.bassFreqMin, BG_PARAMS_PRESET.bassFreqMax) // Returns 0-255 based on amplitude between 2 frequencies
+  BASS_AMP = FFT.getEnergy(BG_PRESET.bassFreqMin, BG_PRESET.bassFreqMax) // Returns 0-255 based on amplitude between 2 frequencies
 
-  translate(HALF_WIDTH, HALF_HEIGHT) // Draw relative to the center of the window
+  translate(HALF_WIDTH, HALF_HEIGHT) // Draw relative to the center of the window, easier for centred drawing
 
-  // Shakes background slightly on higher amplitudes
-  push()
-  if(BASS_AMP > BG_PARAMS_PRESET.shakeAmpMin && BG_PARAMS.shake > 0) {
-    rotate(random(-BG_PARAMS.shake, BG_PARAMS.shake))
-  }
-  image(BG, 0, 0, width + BG_PARAMS.zoom * 1.6, height + BG_PARAMS.zoom * 0.9)
-  pop()
-
-  // Applies an alpha layer over the background image
-  // Dynamically fades background on lower amplitudes
-  if(BG_PARAMS.fade) {
-    fadeBackground(BASS_AMP)
+  if (BACKGROUND) {
+    BACKGROUND.update()
+    BACKGROUND.show()
   }
 
   if (PARTICLE_EMITTER) {
@@ -127,7 +100,7 @@ function keyPressed() {
       toggleGui()
       break
     case 'r':
-      reloadBackground()
+      BACKGROUND.setImage()
       break
   }
 }
@@ -157,17 +130,17 @@ function setupGui() {
 
   GUI_WAVE = createGui("Wave")
   GUI_WAVE.setPosition(GUI_PADDING, GUI_PADDING)
-  GUI_WAVE.prototype.addDropDown('type', WAVE_TYPES, resetWave)
+  GUI_WAVE.prototype.addDropDown('type', WAVE_TYPES, setWave)
   GUI_WAVE.addObject(WAVE_PARAMS)
 
   GUI_PARTICLES = createGui("Particles")
   GUI_PARTICLES.setPosition(GUI_WIDTH + 2*GUI_PADDING, GUI_PADDING)
-  GUI_PARTICLES.prototype.addDropDown('type', PARTICLE_TYPES, resetParticleEmitter)
-  GUI_PARTICLES.addObject(PARTICLE_PARAMS)
+  GUI_PARTICLES.prototype.addDropDown('type', PARTICLE_TYPES, setParticleEmitter)
+  GUI_PARTICLES.addObject(PARTICLE_CONFIG)
 
   GUI_BACKGROUND = createGui("Background")
   GUI_BACKGROUND.setPosition(2*GUI_WIDTH+ 3*GUI_PADDING, GUI_PADDING)
-  GUI_BACKGROUND.addObject(BG_PARAMS)
+  GUI_BACKGROUND.addObject(BG_CONFIG)
 
   PLAY_BUTTON = createButton('Play')
   PLAY_BUTTON.position(HALF_WIDTH - PLAY_BUTTON.width / 2, HALF_HEIGHT - PLAY_BUTTON.height / 2)
@@ -199,32 +172,3 @@ function toggleGui() {
 //   HALF_HEIGHT = height / 2
 //   HALF_WIDTH = width / 2
 // }
-
-
-function fadeBackground(amp) {
-  var alpha = map(amp, 0, 255, 180, 150)
-  fill(0, alpha)
-  rect(0, 0, width, height)
-}
-
-
-function reloadBackground() {
-
-  // windowResized() temporarily moved here because it slows everything down...
-  resizeCanvas(windowWidth, windowHeight)
-  BG = loadImage(BG_PARAMS.url, function() {
-    BG.filter(BLUR, BG_PARAMS_PRESET.blur)
-    image(BG, 0, 0, width + BG_PARAMS.zoom * 1.6, height + BG_PARAMS.zoom * 0.9)
-  })
-  HALF_HEIGHT = height / 2
-  HALF_WIDTH = width / 2
-
-  if(BG_PARAMS.url != prevBgUrl) {
-    BG = loadImage(BG_PARAMS.url, function() {
-      BG.filter(BLUR, BG_PARAMS_PRESET.blur)
-      image(BG, 0, 0, width + BG_PARAMS.zoom * 1.6, height + BG_PARAMS.zoom * 0.9)
-    })
-    prevBgUrl = BG_PARAMS.url
-  }
-
-}
