@@ -1,6 +1,4 @@
 class Particle {
-
-
     constructor(
         pos, vel, acc, 
         w=PARTICLE_CONFIG.w, fill=PARTICLE_CONFIG.fill,
@@ -22,14 +20,12 @@ class Particle {
         this.invertFade = invertFade
     }
 
-
     update() {
-
         this.vel.add(this.acc)
         this.vel.limit(this.velMax)
 
         if(this.ampResponsive) {
-            this.pos.add(this.vel.copy().mult(BASS_AMP / 64))
+            this.pos.add(this.vel.copy().mult(AUDIO.getBassAmp() / 64))
         } else {
             this.pos.add(this.vel)
         }
@@ -40,9 +36,13 @@ class Particle {
         } else {
             this.fill.setAlpha(map(this.life, 0, this.maxLife, 0, 255))
         }
-
     }
 
+    show() {
+        noStroke()
+        fill(this.fill)
+        ellipse(this.pos.x, this.pos.y, this.size)
+    }
 
     isOutOfBounds(width, height) {
         return this.pos.x < -width 
@@ -51,13 +51,5 @@ class Particle {
         || this.pos.y > height
         || this.life < 0
     }
-
-
-    show() {
-        noStroke()
-        fill(this.fill)
-        ellipse(this.pos.x, this.pos.y, this.size)
-    }
-
 
 }

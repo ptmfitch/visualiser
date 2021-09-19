@@ -1,10 +1,6 @@
-let GUI_WAVE
-
-
 let WAVE_TYPES = ['ring-mirror', 'circle-mirror', 'line-h', 'line-v', 'none']
 
-let WAVE_PARAMS = {
-
+let WAVE_CONFIG = {
   weight: 3,
   weightMin: 1,
   weightMax: 10,
@@ -15,7 +11,6 @@ let WAVE_PARAMS = {
   distortion: 50,
   distortionMin: 1,
   distortionMax: 500,
-
 }
 
 let RING_CONFIG = {
@@ -32,34 +27,28 @@ let LINE_CONFIG = {
 
 let SPACE_BETWEEN_LINES
 
-
 class LinearWave {
-
-
     constructor(type) {
-
         this.type = type // Type of linear wave
-
         this.points = [] // Points along the line
-
     }
 
-
     update() {
-
         this.points = []
 
-        var minHeight
-        var maxHeight
+        let waveform = AUDIO.getWaveform()
+
+        let minHeight
+        let maxHeight
 
         switch(this.type) {
             case 'ring-mirror':
             case 'circle-mirror':
-                minHeight = RING_CONFIG.radius - WAVE_PARAMS.distortion
-                maxHeight = RING_CONFIG.radius + WAVE_PARAMS.distortion
+                minHeight = RING_CONFIG.radius - WAVE_CONFIG.distortion
+                maxHeight = RING_CONFIG.radius + WAVE_CONFIG.distortion
                 for (let i = 0; i <= 180; i += 1) {
-                    let j = floor(map(i, 0, 180, 0, WAVEFORM.length - 1))
-                    let r = map(WAVEFORM[j], -1, 1, minHeight, maxHeight) + BASS_AMP
+                    let j = floor(map(i, 0, 180, 0, waveform.length - 1))
+                    let r = map(waveform[j], -1, 1, minHeight, maxHeight) + AUDIO.getBassAmp()
                     let x = r * sin(i)
                     let y = r * cos(i)
                     let p = [x, y]
@@ -68,40 +57,37 @@ class LinearWave {
                 }
                 break
             case 'line-h':
-                minHeight = LINE_CONFIG.height - WAVE_PARAMS.distortion
-                maxHeight = LINE_CONFIG.height + WAVE_PARAMS.distortion
+                minHeight = LINE_CONFIG.height - WAVE_CONFIG.distortion
+                maxHeight = LINE_CONFIG.height + WAVE_CONFIG.distortion
                 for (var i = 0; i <= width; i += 1) {
-                    let j = floor(map(i, 0, width, 0, WAVEFORM.length - 1))
+                    let j = floor(map(i, 0, width, 0, waveform.length - 1))
                     let x = i - HALF_WIDTH
-                    let y = map(WAVEFORM[j], -1, 1, minHeight, maxHeight)
+                    let y = map(waveform[j], -1, 1, minHeight, maxHeight)
                     let p = [x, y]
                     
                     this.points.push(p)
                 }
                 break
             case 'line-v':
-                minHeight = LINE_CONFIG.height - WAVE_PARAMS.distortion
-                maxHeight = LINE_CONFIG.height + WAVE_PARAMS.distortion
+                minHeight = LINE_CONFIG.height - WAVE_CONFIG.distortion
+                maxHeight = LINE_CONFIG.height + WAVE_CONFIG.distortion
                 for (var i = 0; i <= height; i += 1) {
-                    let j = floor(map(i, 0, height, 0, WAVEFORM.length - 1))
+                    let j = floor(map(i, 0, height, 0, waveform.length - 1))
                     let y = i - HALF_HEIGHT
-                    let x = map(WAVEFORM[j], -1, 1, minHeight, maxHeight)
+                    let x = map(waveform[j], -1, 1, minHeight, maxHeight)
                     let p = [x, y]
                     
                     this.points.push(p)
                 }
                 break
         }
-
     }
 
-
     show() {
-
         push()
 
-        stroke(WAVE_PARAMS.stroke)
-        strokeWeight(WAVE_PARAMS.weight)
+        stroke(WAVE_CONFIG.stroke)
+        strokeWeight(WAVE_CONFIG.weight)
         
         switch(this.type) {
             case 'ring-mirror':
@@ -116,7 +102,7 @@ class LinearWave {
                 }
                 break
             case 'circle-mirror':
-                fill(WAVE_PARAMS.fill)
+                fill(WAVE_CONFIG.fill)
                 beginShape() // Draw whole ring at once
                 for (let i = 0; i < this.points.length; i++) {
                     let p = this.points[i]
@@ -142,12 +128,9 @@ class LinearWave {
         }
 
         pop()
-        
     }
 
-
 }
-
 
 function setWave(qs) {
     let type = qs.value
@@ -156,10 +139,9 @@ function setWave(qs) {
         case 'circle-mirror':
         case 'line-h':
         case 'line-v':
-            WAVE = new LinearWave(type)
-            break
+            return new LinearWave(type)
         default:
-            WAVE = null
+            return null
     }
 }
   

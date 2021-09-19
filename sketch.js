@@ -2,48 +2,40 @@ let GUI_VISIBLE = true
 let GUI_WIDTH = 200
 let GUI_PADDING = 10
 
+let GUI_BACKGROUND
+let GUI_PARTICLES
+let GUI_WAVE
+
+let ICON_INFO
+let ICON_PLAY
+
+let AUDIO
+
 let BACKGROUND
 let PARTICLE_EMITTER
 let WAVE
 
-
-// SONG
-
-let SONGS = [
-  'Catmosphere - Candy-Coloured Sky.mp3',
-  'JJD - A New Adventure (feat. Molly Ann) [NCS Release].mp3',
-  'Papa Khan - Wounds [NCS Release].mp3',
-  'Rival - Throne (ft. Neoni) (Lost Identities Remix) [NCS Release].mp3'
-]
-let SONG
-let SONG_URL
-
-let FFT
-let FFT_SMOOTHING = 0.3
-
-let SPECTRUM
-let WAVEFORM
-let BASS_AMP
-
-let PLAY_BUTTON
-
 let HALF_HEIGHT
 let HALF_WIDTH
 
-
+// Load assets before running setup()
 function preload() {
-  SONG_URL = 'assets/' + random(SONGS)
-  SONG = loadSound(SONG_URL)
-  IMAGE = loadImage(BG_CONFIG.url)
+  AUDIO = new Audio()
+  BACKGROUND = new Background()
+
+  ICON_INFO = loadImage('assets/icons8-info-30.png')
+  ICON_PLAY = loadImage('assets/icons8-circled-play-30.png')
 }
 
-
+// Initialise canvas and globals
 function setup() {
 
   createCanvas(windowWidth, windowHeight)
+  
+  // TODO are these globals needed
   HALF_HEIGHT = height / 2
   HALF_WIDTH = width / 2
-  SPACE_BETWEEN_LINES = width / 128
+  SPACE_BETWEEN_LINES = width / 128 // TODO: Add to bar wave class
 
   setupGui()
 
@@ -51,24 +43,40 @@ function setup() {
   imageMode(CENTER)
   rectMode(CENTER)
 
-  FFT = new p5.FFT(FFT_SMOOTHING)
-
-  IMAGE.filter(BLUR, BG_PRESET.blur)
-
-  setBackground()
-  setParticleEmitter({value: PARTICLE_TYPES[0]})
-  setWave({value: WAVE_TYPES[0]})
-
-  noLoop()
+  PARTICLE_EMITTER = setParticleEmitter({value: PARTICLE_TYPES[0]})
+  WAVE = setWave({value: WAVE_TYPES[0]})
 
 }
 
+// Initialise GUIs
+// TODO: Add to respective classes
+function setupGui() {
 
+  GUI_WAVE = createGui("Wave")
+  GUI_WAVE.setPosition(GUI_PADDING, GUI_PADDING)
+  GUI_WAVE.prototype.addDropDown('type', WAVE_TYPES, setWave)
+  GUI_WAVE.addObject(WAVE_CONFIG)
+
+  GUI_PARTICLES = createGui("Particles")
+  GUI_PARTICLES.setPosition(GUI_WIDTH + 2*GUI_PADDING, GUI_PADDING)
+  GUI_PARTICLES.prototype.addDropDown('type', PARTICLE_TYPES, setParticleEmitter)
+  GUI_PARTICLES.addObject(PARTICLE_CONFIG)
+
+  GUI_BACKGROUND = createGui("Background")
+  GUI_BACKGROUND.setPosition(2*GUI_WIDTH+ 3*GUI_PADDING, GUI_PADDING)
+  GUI_BACKGROUND.addObject(BG_CONFIG)
+
+  // TODO credit icons8.com for icon
+  PLAY_BUTTON = createButton('Play')
+  PLAY_BUTTON.position(HALF_WIDTH - PLAY_BUTTON.width / 2, HALF_HEIGHT - PLAY_BUTTON.height / 2)
+  PLAY_BUTTON.mousePressed(playButtonPressed)
+
+}
+
+// Called every frame
 function draw() {
 
-  SPECTRUM = FFT.analyze()
-  WAVEFORM = FFT.waveform()
-  BASS_AMP = FFT.getEnergy(BG_PRESET.bassFreqMin, BG_PRESET.bassFreqMax) // Returns 0-255 based on amplitude between 2 frequencies
+  AUDIO.update()
 
   translate(HALF_WIDTH, HALF_HEIGHT) // Draw relative to the center of the window, easier for centred drawing
 
@@ -89,12 +97,12 @@ function draw() {
 
 }
 
-
+// Handle key presses
 function keyPressed() {
   switch(key) {
     case 'p':
     case ' ':
-      togglePlay()
+      playButtonPressed()
       break
     case 'h':
       toggleGui()
@@ -105,50 +113,22 @@ function keyPressed() {
   }
 }
 
-
-function togglePlay() {
-  if (SONG.isPlaying()) {
-    SONG.pause()
-    if (!GUI_VISIBLE) {
-      toggleGui()
-    }
-    PLAY_BUTTON.show()
-    noLoop()
-  }
-  else {
-    SONG.play()
+// Handle toggling song and GUI
+function playButtonPressed() {
+  if (AUDIO.togglePlay()) {
     if (GUI_VISIBLE) {
       toggleGui()
     }
     PLAY_BUTTON.hide()
-    loop()
+  } else {
+    if (!GUI_VISIBLE) {
+      toggleGui()
+    }
+    PLAY_BUTTON.show()
   }
 }
 
-
-function setupGui() {
-
-  GUI_WAVE = createGui("Wave")
-  GUI_WAVE.setPosition(GUI_PADDING, GUI_PADDING)
-  GUI_WAVE.prototype.addDropDown('type', WAVE_TYPES, setWave)
-  GUI_WAVE.addObject(WAVE_PARAMS)
-
-  GUI_PARTICLES = createGui("Particles")
-  GUI_PARTICLES.setPosition(GUI_WIDTH + 2*GUI_PADDING, GUI_PADDING)
-  GUI_PARTICLES.prototype.addDropDown('type', PARTICLE_TYPES, setParticleEmitter)
-  GUI_PARTICLES.addObject(PARTICLE_CONFIG)
-
-  GUI_BACKGROUND = createGui("Background")
-  GUI_BACKGROUND.setPosition(2*GUI_WIDTH+ 3*GUI_PADDING, GUI_PADDING)
-  GUI_BACKGROUND.addObject(BG_CONFIG)
-
-  PLAY_BUTTON = createButton('Play')
-  PLAY_BUTTON.position(HALF_WIDTH - PLAY_BUTTON.width / 2, HALF_HEIGHT - PLAY_BUTTON.height / 2)
-  PLAY_BUTTON.mousePressed(togglePlay)
-
-}
-
-
+// Switch GUIs on and off
 function toggleGui() { 
   if (!GUI_VISIBLE) {
     GUI_WAVE.show()
@@ -161,7 +141,6 @@ function toggleGui() {
   }
   GUI_VISIBLE = !GUI_VISIBLE
 }
-
 
 // function windowResized() {
 //   resizeCanvas(windowWidth, windowHeight)

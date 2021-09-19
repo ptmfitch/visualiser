@@ -1,7 +1,3 @@
-let PARTICLES
-
-let GUI_PARTICLES
-
 let PARTICLE_PRESET = {
   accMin: 0.00001,
   accMax: 0.0001,
@@ -12,7 +8,6 @@ let PARTICLE_PRESET = {
 }
 
 let PARTICLE_CONFIG = {
-  
   w: 5,
   wMin: 1,
   wMax: 10,
@@ -28,7 +23,6 @@ let PARTICLE_CONFIG = {
   lifeMax: 1027,
 
   acc: 50
-
 }
 
 let PARTICLE_TYPES = ['ring', 'sides', 'flames', 'cascade', 'starwars', 'none']
@@ -36,7 +30,7 @@ let PARTICLE_TYPES = ['ring', 'sides', 'flames', 'cascade', 'starwars', 'none']
 class ParticleEmitter {
 
     constructor(type) {
-        PARTICLES = []
+        this.particles = []
 
         this.particle
         switch(type) {
@@ -60,24 +54,24 @@ class ParticleEmitter {
 
     update() {
         // Only add new particles while song is playing
-        if (SONG.isPlaying()) {
+        if (AUDIO.isPlaying()) {
             for (let i = 0; i < PARTICLE_CONFIG.freq; i++) {
-                PARTICLES.push(this.particle())
+                this.particles.push(this.particle())
             }
         }
         // Allow particles to fade after the song ends
-        for (let i = PARTICLES.length - 1; i >= 0; i--) {
-            if (!PARTICLES[i].isOutOfBounds(HALF_WIDTH, HALF_HEIGHT)) {
-                PARTICLES[i].update()
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            if (!this.particles[i].isOutOfBounds(HALF_WIDTH, HALF_HEIGHT)) {
+                this.particles[i].update()
             } else {
-                PARTICLES.splice(i, 1)
+                this.particles.splice(i, 1)
             }
         }
     }
 
     show() {
-        for (let i = 0; i < PARTICLES.length; i++) {
-            PARTICLES[i].show()
+        for (let i = 0; i < this.particles.length; i++) {
+            this.particles[i].show()
         }
     }
 
@@ -87,15 +81,15 @@ class ParticleEmitter {
 function setParticleEmitter(qs) {
     let type = qs.value
     if (type != 'none') {
-        PARTICLE_EMITTER = new ParticleEmitter(type)
+        return new ParticleEmitter(type)
     } else {
-        PARTICLE_EMITTER = null
+        return null
     }
 }
 
 
 function ringParticle() {
-    let pos = p5.Vector.random2D().mult(RING_CONFIG.radius + BASS_AMP)
+    let pos = p5.Vector.random2D().mult(RING_CONFIG.radius + AUDIO.getBassAmp())
     let acc = pos.copy().mult(random(PARTICLE_PRESET.accMin, PARTICLE_PRESET.accMax))
     let vel = acc.copy().mult(100)
     return new Particle(pos, vel, acc, undefined, undefined, undefined, true)
