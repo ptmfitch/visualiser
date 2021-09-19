@@ -137,7 +137,7 @@ function keyPressed() {
       playButtonPressed()
       break
     case 'h':
-      toggleGui()
+      hideButtonPressed()
       break
     case 'r':
       BACKGROUND.setImage()
@@ -158,6 +158,10 @@ function playButtonPressed() {
     }
     PLAY_BUTTON.show()
   }
+}
+
+function hideButtonPressed() {
+  toggleGui()
 }
 
 // Switch GUIs on and off
