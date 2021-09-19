@@ -9,8 +9,6 @@ let SONG_PRESET = {
   fftSmooth: 0.3
 }
 
-let PLAY_BUTTON
-
 class Audio {
 
 

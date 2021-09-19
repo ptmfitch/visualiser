@@ -1,3 +1,6 @@
+// Peter Fitch
+// Audio Visualisation
+
 let GUI_VISIBLE = true
 let GUI_WIDTH = 200
 let GUI_PADDING = 10
@@ -5,6 +8,8 @@ let GUI_PADDING = 10
 let GUI_BACKGROUND
 let GUI_PARTICLES
 let GUI_WAVE
+
+let PLAY_BUTTON
 
 let ICON_INFO
 let ICON_PLAY
@@ -32,7 +37,6 @@ function setup() {
 
   createCanvas(windowWidth, windowHeight)
   
-  // TODO are these globals needed
   HALF_HEIGHT = height / 2
   HALF_WIDTH = width / 2
   SPACE_BETWEEN_LINES = width / 128 // TODO: Add to bar wave class
@@ -142,6 +146,7 @@ function toggleGui() {
   GUI_VISIBLE = !GUI_VISIBLE
 }
 
+// Triggers on window resize
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight)
   BACKGROUND.setImage()
