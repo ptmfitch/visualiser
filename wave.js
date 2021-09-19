@@ -44,8 +44,8 @@ class LinearWave {
         switch(this.type) {
             case 'ring-mirror':
             case 'circle-mirror':
-                minHeight = RING_CONFIG.radius - WAVE_CONFIG.distortion
-                maxHeight = RING_CONFIG.radius + WAVE_CONFIG.distortion
+                minHeight = height / 6 - height / 24
+                maxHeight = height / 6 + height / 24
                 for (let i = 0; i <= 180; i += 1) {
                     let j = floor(map(i, 0, 180, 0, waveform.length - 1))
                     let r = map(waveform[j], -1, 1, minHeight, maxHeight) + AUDIO.getBassAmp()

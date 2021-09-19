@@ -145,6 +145,10 @@ function keyPressed() {
   }
 }
 
+function mouseClicked() {
+  playButtonPressed()
+}
+
 // Handle toggling song and GUI
 function playButtonPressed() {
   if (AUDIO.togglePlay()) {
