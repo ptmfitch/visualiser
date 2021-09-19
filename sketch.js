@@ -99,6 +99,34 @@ function draw() {
     WAVE.show()
   }
 
+  // Display info button with credits
+  if (GUI_VISIBLE) {
+    let margin = 10
+    let w = ICON_INFO.width
+    push()
+    noStroke()
+    if (margin <= mouseX
+      && mouseX <= margin + w
+      && height - (margin + w) <= mouseY
+      && margin <= height - margin) {
+      fill(255) // Highlight
+      push()
+      textSize(20)
+      stroke(255)
+      strokeWeight(3)
+      fill(0)
+      text("Music provided by Argofox:", -HALF_WIDTH + margin, HALF_HEIGHT - 100)
+      text("Catmosphere - Candy-Coloured Sky", -HALF_WIDTH + margin, HALF_HEIGHT - 75)
+      text("https://youtu.be/AZjYZ8Kjgs8", -HALF_WIDTH + margin, HALF_HEIGHT - 50)
+      pop()
+    } else {
+      fill(128) // Grey out
+    }
+    ellipse(-HALF_WIDTH + margin + w/2, HALF_HEIGHT - (margin + w/2), w+1)
+    image(ICON_INFO, -HALF_WIDTH + margin + w/2, HALF_HEIGHT - (margin + w/2))
+    pop()
+  }
+  
 }
 
 // Handle key presses
