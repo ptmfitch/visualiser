@@ -142,12 +142,10 @@ function toggleGui() {
   GUI_VISIBLE = !GUI_VISIBLE
 }
 
-// function windowResized() {
-//   resizeCanvas(windowWidth, windowHeight)
-//   BG = loadImage(BG_PARAMS.url, function() {
-//     BG.filter(BLUR, BG_PARAMS_PRESET.blur)
-//     image(BG, 0, 0, width + BG_PARAMS.zoom * 1.6, height + BG_PARAMS.zoom * 0.9)
-//   })
-//   HALF_HEIGHT = height / 2
-//   HALF_WIDTH = width / 2
-// }
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight)
+  BACKGROUND.setImage()
+  HALF_HEIGHT = height / 2
+  HALF_WIDTH = width / 2
+  PLAY_BUTTON.position(HALF_WIDTH - PLAY_BUTTON.width / 2, HALF_HEIGHT - PLAY_BUTTON.height / 2)
+}
