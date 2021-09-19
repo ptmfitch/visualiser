@@ -104,8 +104,3 @@ dist
 .tern-port
 
 .DS_Store
-assets/*
-p5.js
-quicksettings.js
-p5.gui.js
-p5.sound.js
