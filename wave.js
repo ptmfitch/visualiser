@@ -131,19 +131,6 @@ class LinearWave {
     }
 
 }
-
-function setWave(qs) {
-    let type = qs.value
-    switch(type) {
-        case 'ring-mirror':
-        case 'circle-mirror':
-        case 'line-h':
-        case 'line-v':
-            return new LinearWave(type)
-        default:
-            return null
-    }
-}
   
 //   } else if(waveParams.type == 'bars') {
 

@@ -3,7 +3,7 @@ let BG_CONFIG = {
 
   url: 'https://images.pexels.com/photos/2763927/pexels-photo-2763927.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
 
-  shake: 0.1,
+  shake: 1.0,
   shakeMin: 0,
   shakeMax: 2,
   shakeStep: 0.1,
@@ -20,7 +20,7 @@ let BG_CONFIG = {
 let BG_PRESET = {
     bassFreqMin: 90,
     bassFreqMax: 200,
-    shakeAmpMin: 250,
+    shakeAmpMin: 200,
     blur: 12,
   
     alpha: 180,

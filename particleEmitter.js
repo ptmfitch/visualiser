@@ -77,24 +77,12 @@ class ParticleEmitter {
 
 }
 
-
-function setParticleEmitter(qs) {
-    let type = qs.value
-    if (type != 'none') {
-        return new ParticleEmitter(type)
-    } else {
-        return null
-    }
-}
-
-
 function ringParticle() {
     let pos = p5.Vector.random2D().mult(RING_CONFIG.radius + AUDIO.getBassAmp())
     let acc = pos.copy().mult(random(PARTICLE_PRESET.accMin, PARTICLE_PRESET.accMax))
     let vel = acc.copy().mult(100)
     return new Particle(pos, vel, acc, undefined, undefined, undefined, true)
 }
-
 
 function sideParticle() {
     let side = 1
@@ -109,7 +97,6 @@ function sideParticle() {
     return new Particle(pos, vel, acc, undefined, undefined, velMax)
 }
 
-
 function flameParticle() {
     let pos = new p5.Vector(random(-HALF_WIDTH, HALF_WIDTH), HALF_HEIGHT) // Start at the top of the screen
     let acc = new p5.Vector(0, -random(PARTICLE_PRESET.accMin, PARTICLE_PRESET.accMax))
@@ -118,7 +105,6 @@ function flameParticle() {
     return new Particle(pos, vel, acc)
 }
 
-
 function cascadeParticle() {
     let pos = new p5.Vector(random(-HALF_WIDTH, HALF_WIDTH), -HALF_HEIGHT) // Start at the top of the screen
     let acc = new p5.Vector(0, random(PARTICLE_PRESET.accMin, PARTICLE_PRESET.accMax))
@@ -126,7 +112,6 @@ function cascadeParticle() {
     let vel = createVector(0, 0)
     return new Particle(pos, vel, acc)
 }
-
 
 function starwarsParticle() {
     let pos = new p5.Vector(random(-10, 10), random(-10, 10)) // Start around the middle of the screen

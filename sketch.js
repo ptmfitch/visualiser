@@ -47,14 +47,15 @@ function setup() {
   imageMode(CENTER)
   rectMode(CENTER)
 
-  PARTICLE_EMITTER = setParticleEmitter({value: PARTICLE_TYPES[0]})
-  WAVE = setWave({value: WAVE_TYPES[0]})
+  setParticleEmitter({value: PARTICLE_TYPES[0]})
+  setWave({value: WAVE_TYPES[0]})
 
 }
 
 // Initialise GUIs
-// TODO: Add to respective classes
 function setupGui() {
+
+  // TODO Create editor mode/viewer mode
 
   GUI_WAVE = createGui("Wave")
   GUI_WAVE.setPosition(GUI_PADDING, GUI_PADDING)
@@ -75,6 +76,31 @@ function setupGui() {
   PLAY_BUTTON.position(HALF_WIDTH - PLAY_BUTTON.width / 2, HALF_HEIGHT - PLAY_BUTTON.height / 2)
   PLAY_BUTTON.mousePressed(playButtonPressed)
 
+}
+
+function setParticleEmitter(qs) {
+  let type = qs.value
+  if (type != 'none') {
+      PARTICLE_EMITTER = new ParticleEmitter(type)
+  } else {
+      PARTICLE_EMITTER = null
+  }
+}
+
+function setWave(qs) {
+  let type = qs.value
+  console.log(type)
+  switch(type) {
+      case 'ring-mirror':
+      case 'circle-mirror':
+      case 'line-h':
+      case 'line-v':
+          WAVE = new LinearWave(type)
+          break
+      default:
+          WAVE = null
+          break
+  }
 }
 
 // Called every frame
@@ -105,6 +131,7 @@ function draw() {
     let w = ICON_INFO.width
     push()
     noStroke()
+    // TODO abstract this to make it reusable
     if (margin <= mouseX
       && mouseX <= margin + w
       && height - (margin + w) <= mouseY
@@ -143,10 +170,6 @@ function keyPressed() {
       BACKGROUND.setImage()
       break
   }
-}
-
-function mouseClicked() {
-  playButtonPressed()
 }
 
 // Handle toggling song and GUI
@@ -188,5 +211,8 @@ function windowResized() {
   BACKGROUND.setImage()
   HALF_HEIGHT = height / 2
   HALF_WIDTH = width / 2
-  PLAY_BUTTON.position(HALF_WIDTH - PLAY_BUTTON.width / 2, HALF_HEIGHT - PLAY_BUTTON.height / 2)
+  PLAY_BUTTON.position(
+    HALF_WIDTH - PLAY_BUTTON.width / 2, 
+    HALF_HEIGHT - PLAY_BUTTON.height / 2
+  )
 }
