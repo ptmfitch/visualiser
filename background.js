@@ -1,5 +1,7 @@
+const BG_TYPE_OPTIONS = ['image', 'solid']
+
 let BG_CONFIG = {
-  type: ['image', 'solid'],
+  type: 'image',
 
   url: 'https://images.pexels.com/photos/2763927/pexels-photo-2763927.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260',
 
@@ -51,7 +53,7 @@ class Background {
 
     show() {
         if (BG_CONFIG.type == 'solid') {
-            background(BG_CONFIG.fill) // Clear the canvas
+            background(BG_CONFIG.fill[0], BG_CONFIG.fill[1], BG_CONFIG.fill[2])
             return
         }
 

@@ -6,6 +6,10 @@ const {
   isStringArray,
   sliderLimits,
   rgbArrayToHex,
+  hexToRgbArray,
+  normalizeBindParams,
+  waveControlVisibility,
+  backgroundControlVisibility,
 } = require('../lib/configBinding.js')
 
 describe('shouldSkipConfigKey', () => {
@@ -51,5 +55,90 @@ describe('sliderLimits', () => {
 describe('rgbArrayToHex', () => {
   it('formats hex color strings', () => {
     assert.equal(rgbArrayToHex([17, 255, 238]), '#11ffee')
+  })
+})
+
+describe('hexToRgbArray', () => {
+  it('parses hex strings', () => {
+    assert.deepEqual(hexToRgbArray('#11ffee'), [17, 255, 238])
+  })
+
+  it('passes through rgb arrays', () => {
+    assert.deepEqual(hexToRgbArray([255, 17, 153]), [255, 17, 153])
+  })
+})
+
+describe('normalizeBindParams', () => {
+  it('unwraps a single array argument', () => {
+    assert.deepEqual(
+      normalizeBindParams([['weight', 'stroke']], ['type', 'weight', 'stroke']),
+      ['weight', 'stroke']
+    )
+  })
+
+  it('falls back to object keys when empty', () => {
+    assert.deepEqual(normalizeBindParams([], ['type', 'weight']), ['type', 'weight'])
+  })
+})
+
+describe('waveControlVisibility', () => {
+  it('shows only type when wave is none', () => {
+    assert.deepEqual(waveControlVisibility({ type: 'none' }), {
+      type: true,
+      style: false,
+      direction: false,
+      colourMode: false,
+      weight: false,
+      distortion: false,
+      offset: false,
+      stroke: false,
+      fill: false,
+    })
+  })
+
+  it('shows stroke for open ring', () => {
+    const v = waveControlVisibility({ type: 'ring', style: 'open' })
+    assert.equal(v.style, true)
+    assert.equal(v.stroke, true)
+    assert.equal(v.fill, false)
+  })
+
+  it('shows stroke and fill for closed ring', () => {
+    const v = waveControlVisibility({ type: 'ring', style: 'closed' })
+    assert.equal(v.fill, true)
+    assert.equal(v.stroke, true)
+  })
+
+  it('shows stroke for solid line', () => {
+    const v = waveControlVisibility({ type: 'line', colourMode: 'solid' })
+    assert.equal(v.direction, true)
+    assert.equal(v.distortion, true)
+    assert.equal(v.stroke, true)
+  })
+
+  it('hides stroke for rainbow line', () => {
+    const v = waveControlVisibility({ type: 'line', colourMode: 'rainbow' })
+    assert.equal(v.colourMode, true)
+    assert.equal(v.stroke, false)
+  })
+})
+
+describe('backgroundControlVisibility', () => {
+  it('shows image controls for image type', () => {
+    const v = backgroundControlVisibility({ type: 'image' })
+    assert.equal(v.url, true)
+    assert.equal(v.shake, true)
+    assert.equal(v.zoom, true)
+    assert.equal(v.fade, true)
+    assert.equal(v.fill, false)
+  })
+
+  it('shows fill only for solid type', () => {
+    const v = backgroundControlVisibility({ type: 'solid' })
+    assert.equal(v.fill, true)
+    assert.equal(v.url, false)
+    assert.equal(v.shake, false)
+    assert.equal(v.zoom, false)
+    assert.equal(v.fade, false)
   })
 })
