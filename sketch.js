@@ -65,6 +65,8 @@ function setup() {
   lastMouseActivityMs = millis()
   document.addEventListener('mousemove', onMouseActivity)
 
+  hideLoadingScreen()
+
 }
 
 // Initialise GUIs
@@ -308,20 +310,20 @@ function keyPressed() {
   if (VIDEO_EXPORT && VIDEO_EXPORT.isBusy()) {
     return false
   }
-  switch(key) {
+  switch (key) {
     case 'p':
     case ' ':
       playButtonPressed()
-      break
+      return false
     case 'h':
       hideButtonPressed()
-      break
+      return false
     case 'r':
       BACKGROUND.setImage()
-      break
+      return false
     case 'e':
       exportButtonPressed()
-      break
+      return false
   }
 }
 
@@ -350,7 +352,7 @@ function onMouseActivity() {
 }
 
 function updateGuiAutoHide() {
-  if (!GUI_VISIBLE || mouseIsPressed) {
+  if (!GUI_VISIBLE || mouseIsPressed || !AUDIO.isPlaying()) {
     return
   }
   if (millis() - lastMouseActivityMs >= GUI_IDLE_HIDE_MS) {
