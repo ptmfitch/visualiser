@@ -100,6 +100,7 @@ describe('waveControlVisibility', () => {
     const v = waveControlVisibility({ type: 'ring', style: 'open' })
     assert.equal(v.style, true)
     assert.equal(v.stroke, true)
+    assert.equal(v.distortion, true)
     assert.equal(v.fill, false)
   })
 
@@ -140,5 +141,20 @@ describe('backgroundControlVisibility', () => {
     assert.equal(v.shake, false)
     assert.equal(v.zoom, false)
     assert.equal(v.fade, false)
+  })
+
+  it('shows only type for hearts', () => {
+    const v = backgroundControlVisibility({ type: 'hearts' })
+    assert.equal(v.type, true)
+    assert.equal(v.colourMode, true)
+    assert.equal(v.fill, true)
+    assert.equal(v.shake, false)
+    assert.equal(v.url, false)
+  })
+
+  it('hides fill for hearts rainbow colour', () => {
+    const v = backgroundControlVisibility({ type: 'hearts', colourMode: 'rainbow' })
+    assert.equal(v.colourMode, true)
+    assert.equal(v.fill, false)
   })
 })

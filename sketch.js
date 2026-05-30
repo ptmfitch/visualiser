@@ -185,12 +185,17 @@ function setupWaveGui() {
 function setupBackgroundGui() {
   GUI_BACKGROUND = createControlPanel("Background", 2 * GUI_WIDTH + 3 * GUI_PADDING, GUI_PADDING)
   GUI_BACKGROUND.addBoundDropDown('type', BG_TYPE_OPTIONS, BG_CONFIG, onBackgroundConfigChange)
+  GUI_BACKGROUND.addBoundDropDown('colourMode', BG_COLOUR_MODE_OPTIONS, BG_CONFIG, onBackgroundConfigChange)
   GUI_BACKGROUND.syncDropDown('type', BG_TYPE_OPTIONS, BG_CONFIG.type)
+  GUI_BACKGROUND.syncDropDown('colourMode', BG_COLOUR_MODE_OPTIONS, BG_CONFIG.colourMode)
   GUI_BACKGROUND.addObject(BG_CONFIG, ['url', 'shake', 'zoom', 'fade', 'fill'])
   refreshBackgroundControls()
 }
 
 function onBackgroundConfigChange() {
+  if (BG_CONFIG.type === 'hearts' && BACKGROUND) {
+    BACKGROUND.resetHeartRings()
+  }
   refreshBackgroundControls()
 }
 
@@ -239,16 +244,25 @@ function draw() {
 
   if (BACKGROUND) {
     BACKGROUND.update()
-    BACKGROUND.show()
   }
 
   if (PARTICLE_EMITTER) {
     PARTICLE_EMITTER.update()
-    PARTICLE_EMITTER.show()
   }
 
   if (WAVE) {
     WAVE.update()
+  }
+
+  if (BACKGROUND) {
+    BACKGROUND.show()
+  }
+
+  if (PARTICLE_EMITTER) {
+    PARTICLE_EMITTER.show()
+  }
+
+  if (WAVE) {
     WAVE.show()
   }
 
@@ -381,6 +395,9 @@ function windowResized() {
   }
   resizeCanvas(windowWidth, windowHeight)
   BACKGROUND.setImage()
+  if (BG_CONFIG.type === 'hearts') {
+    BACKGROUND.resetHeartRings()
+  }
   HALF_HEIGHT = height / 2
   HALF_WIDTH = width / 2
   PLAY_BUTTON.position(
