@@ -104,3 +104,7 @@ dist
 .tern-port
 
 .DS_Store
+
+# Installed vendor libraries — run npm install (see README)
+vendor/
+node_modules/
