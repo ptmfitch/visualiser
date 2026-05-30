@@ -6,7 +6,10 @@ let SONG_PRESET = {
     'Rival - Throne (ft. Neoni) (Lost Identities Remix) [NCS Release].mp3'
   ],
   url: 'Catmosphere - Candy-Coloured Sky.mp3',
-  fftSmooth: 0.3
+  fftSmooth: 0.3,
+
+  volumeFreqMin: 100,
+  volumeFreqMax: 10000,
 }
 
 class Audio {
@@ -41,9 +44,31 @@ class Audio {
   // Returns 0-255 based on amplitude between 2 frequencies
   getAmp(lower, upper) { return this.fft.getEnergy(lower, upper) }
   getBassAmp() { return this.getAmp(BG_PRESET.bassFreqMin, BG_PRESET.bassFreqMax) }
+  getVolumeAmp() { return this.getAmp(SONG_PRESET.volumeFreqMin, SONG_PRESET.volumeFreqMax) }
 
 
   isPlaying() { return this.song.isPlaying() }
+
+  isLoaded() { return this.song && this.song.isLoaded() }
+
+  getDuration() { return this.song ? this.song.duration() : 0 }
+
+  getCurrentTime() { return this.song ? this.song.currentTime() : 0 }
+
+  getSongUrl() { return this.prevUrl || SONG_PRESET.url }
+
+  playFromStart() {
+    this.song.stop()
+    this.song.play()
+  }
+
+  connectToStream(dest) {
+    this.song.connect(dest)
+  }
+
+  disconnectFromStream(dest) {
+    this.song.disconnect(dest)
+  }
 
 
   setSong(url=SONG_PRESET.url) {

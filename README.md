@@ -196,17 +196,17 @@ Sliders control shake intensity, zoom, fade overlay, and fill colour. Press **r*
 
 ### Waves (`wave.js`)
 
-`LinearWave` maps the audio waveform to a polyline (or closed shape). Types (Wave panel → **type**):
+`LinearWave` maps the audio waveform to a polyline (or closed shape). The Wave panel uses a single **type** dropdown plus sub-settings; controls that do not apply to the current type are hidden.
 
-| Type | Description |
-|------|-------------|
-| **ring-mirror** | Two mirrored semicircles; radius follows waveform + bass. |
-| **circle-mirror** | Closed ring: forward arc plus mirrored return path. |
-| **line-h** | Horizontal waveform across the width. |
-| **line-v** | Vertical waveform across the height. |
-| **none** | Disables the wave layer. |
+| Type | Sub-settings | Description |
+|------|--------------|-------------|
+| **none** | — | Disables the wave layer. |
+| **ring** | **style**: `open` \| `closed` | Open = two mirrored semicircles (stroke); closed = filled ring. Radius follows waveform + bass. |
+| **line** | **direction**: `horizontal` \| `vertical`; **colourMode**: `solid` \| `rainbow` | Live waveform across width or height. Solid uses **stroke** colour; rainbow scrolls hue with volume. |
 
-Shared styling: stroke weight, stroke/fill colours, distortion range, and (for rings) radius. Ring types use half a waveform (0–180°); line types sample the waveform across width or height.
+Line settings: **weight**, **distortion** (amplitude range), **offset** (centre position). Ring settings: **weight**, **stroke** (open) or **fill** (closed).
+
+Ring geometry uses half a waveform (0–180°); line types sample the waveform across width or height.
 
 ### Particles (`particle.js`, `particleEmitter.js`)
 
@@ -227,7 +227,7 @@ Particles are removed when they leave the canvas bounds or exhaust their life. P
 
 - **`preload()`** — Creates `Audio` and `Background`, loads UI icons from `assets/`.
 - **`setup()`** — Full-window canvas, three control panels (`lib/controlPanels.js` + QuickSettings), default wave and particle types, centred Play button.
-- **`setWave` / `setParticleEmitter`** — Dropdown callbacks that instantiate the chosen visual module.
+- **`syncWave` / `setParticleEmitter`** — Wave and particle dropdown callbacks that instantiate the chosen visual module.
 - **`toggleGui()`** — Shows or hides all QuickSettings panels.
 - **`windowResized()`** — Resizes canvas, recentres Play button, refreshes background image sizing.
 

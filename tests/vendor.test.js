@@ -6,6 +6,12 @@ const path = require('path')
 const vendorDir = path.join(__dirname, '..', 'vendor')
 
 const requiredFiles = ['p5.js', 'p5.sound.js', 'quicksettings.js']
+const ffmpegFiles = [
+  'ffmpeg/ffmpeg-core.js',
+  'ffmpeg/ffmpeg-core.wasm',
+  'ffmpeg/ffmpeg/index.js',
+  'ffmpeg/util/index.js',
+]
 
 describe('vendor libraries', () => {
   before(() => {
@@ -21,6 +27,14 @@ describe('vendor libraries', () => {
       const filePath = path.join(vendorDir, file)
       assert.ok(fs.existsSync(filePath), `${file} missing — run npm install`)
       assert.ok(fs.statSync(filePath).size > 1000, `${file} looks truncated`)
+    })
+  }
+
+  for (const file of ffmpegFiles) {
+    it(`includes ${file}`, () => {
+      const filePath = path.join(vendorDir, file)
+      assert.ok(fs.existsSync(filePath), `${file} missing — run npm install`)
+      assert.ok(fs.statSync(filePath).size > 0, `${file} looks empty`)
     })
   }
 
