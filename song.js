@@ -10,6 +10,9 @@ let SONG_PRESET = {
 
   volumeFreqMin: 100,
   volumeFreqMax: 10000,
+
+  vocalFreqMin: 300,
+  vocalFreqMax: 3400,
 }
 
 class Audio {
@@ -45,6 +48,7 @@ class Audio {
   getAmp(lower, upper) { return this.fft.getEnergy(lower, upper) }
   getBassAmp() { return this.getAmp(BG_PRESET.bassFreqMin, BG_PRESET.bassFreqMax) }
   getVolumeAmp() { return this.getAmp(SONG_PRESET.volumeFreqMin, SONG_PRESET.volumeFreqMax) }
+  getVocalAmp() { return this.getAmp(SONG_PRESET.vocalFreqMin, SONG_PRESET.vocalFreqMax) }
 
 
   isPlaying() { return this.song.isPlaying() }

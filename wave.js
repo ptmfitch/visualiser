@@ -46,13 +46,21 @@ class LinearWave {
         let { type, direction, colourMode, offset, distortion } = WAVE_CONFIG
 
         if (type === 'ring') {
-            let minHeight = height / 6 - height / 24
-            let maxHeight = height / 6 + height / 24
-            for (let i = 0; i <= 180; i += 1) {
-                let j = floor(map(i, 0, 180, 0, waveform.length - 1))
-                let r = map(waveform[j], -1, 1, minHeight, maxHeight) + AUDIO.getBassAmp()
-                let x = r * sin(i)
-                let y = r * cos(i)
+            let spectrum = AUDIO.getSpectrum()
+            let halfBins = floor(spectrum.length / 2)
+            let baseRadius = min(HALF_WIDTH, HALF_HEIGHT) * 0.32
+            let amp = distortion * 0.35
+
+            for (let i = 0; i < 360; i++) {
+                let halfAngle = i <= 180 ? i : 360 - i
+                let j = floor(map(halfAngle, 0, 180, 0, halfBins - 1))
+                let lo = max(0, j - 1)
+                let hi = min(halfBins - 1, j + 1)
+                let energy = (spectrum[lo] + spectrum[j] + spectrum[hi]) / (3 * 255)
+                let r = baseRadius + energy * amp
+                let rad = (i - 90) * Math.PI / 180
+                let x = r * Math.cos(rad)
+                let y = r * Math.sin(rad)
                 this.points.push([x, y])
             }
         } else if (type === 'line') {
@@ -81,6 +89,7 @@ class LinearWave {
 
     show() {
         push()
+        colorMode(RGB, 255)
 
         stroke(WAVE_CONFIG.stroke[0], WAVE_CONFIG.stroke[1], WAVE_CONFIG.stroke[2])
         strokeWeight(WAVE_CONFIG.weight)
@@ -89,14 +98,12 @@ class LinearWave {
 
         if (type === 'ring' && style === 'open') {
             noFill()
-            for (let t = -1; t <= 1; t += 2) {
-                beginShape()
-                for (let i = 0; i < this.points.length; i++) {
-                    let p = this.points[i]
-                    vertex(p[0] * t, p[1])
-                }
-                endShape()
+            beginShape()
+            for (let i = 0; i < this.points.length; i++) {
+                let p = this.points[i]
+                vertex(p[0], p[1])
             }
+            endShape(CLOSE)
         } else if (type === 'ring' && style === 'closed') {
             stroke(WAVE_CONFIG.stroke[0], WAVE_CONFIG.stroke[1], WAVE_CONFIG.stroke[2])
             fill(WAVE_CONFIG.fill[0], WAVE_CONFIG.fill[1], WAVE_CONFIG.fill[2])
@@ -104,10 +111,6 @@ class LinearWave {
             for (let i = 0; i < this.points.length; i++) {
                 let p = this.points[i]
                 vertex(p[0], p[1])
-            }
-            for (let i = this.points.length - 1; i >= 0; i--) {
-                let p = this.points[i]
-                vertex(p[0] * -1, p[1])
             }
             endShape(CLOSE)
         } else if (type === 'line' && colourMode === 'solid') {

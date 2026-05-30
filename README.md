@@ -185,12 +185,13 @@ Changing the playing file at runtime would mean calling `AUDIO.setSong('other-tr
 
 ### Background (`background.js`)
 
-`Background` supports two modes (Background panel → **type**):
+`Background` supports three modes (Background panel → **type**):
 
 | Mode | Behaviour |
 |------|-----------|
 | **image** | Loads a URL (default: a Pexels photo), applies blur, draws it scaled with optional zoom, rotates slightly on strong bass, and overlays a semi-transparent black rectangle whose opacity follows bass level. |
 | **solid** | Fills the canvas with a configurable RGB colour. |
+| **hearts** | **colourMode**: `solid` \| `rainbow`; **fill** (solid) | Expanding filled hearts from the centre; five-step gradient from strong colour to white; culled when off-screen. White canvas background. |
 
 Sliders control shake intensity, zoom, fade overlay, and fill colour. Press **r** to call `setImage()` again (useful after resizing the window so the image layout is refreshed).
 
@@ -201,12 +202,12 @@ Sliders control shake intensity, zoom, fade overlay, and fill colour. Press **r*
 | Type | Sub-settings | Description |
 |------|--------------|-------------|
 | **none** | — | Disables the wave layer. |
-| **ring** | **style**: `open` \| `closed` | Open = two mirrored semicircles (stroke); closed = filled ring. Radius follows waveform + bass. |
+| **ring** | **style**: `open` \| `closed`; **distortion** | Single closed line; radius from FFT spectrum (180° mirrored). **distortion** controls radial amplitude. |
 | **line** | **direction**: `horizontal` \| `vertical`; **colourMode**: `solid` \| `rainbow` | Live waveform across width or height. Solid uses **stroke** colour; rainbow scrolls hue with volume. |
 
 Line settings: **weight**, **distortion** (amplitude range), **offset** (centre position). Ring settings: **weight**, **stroke** (open) or **fill** (closed).
 
-Ring geometry uses half a waveform (0–180°); line types sample the waveform across width or height.
+Ring geometry maps the lower half of the FFT spectrum to 0–180°, mirrored around the circle.
 
 ### Particles (`particle.js`, `particleEmitter.js`)
 
