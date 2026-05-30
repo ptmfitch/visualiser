@@ -12,7 +12,6 @@ let GUI_WAVE
 let PLAY_BUTTON
 
 let ICON_INFO
-let ICON_PLAY
 
 let AUDIO
 
@@ -29,7 +28,6 @@ function preload() {
   BACKGROUND = new Background()
 
   ICON_INFO = loadImage('assets/icons8-info-30.png')
-  ICON_PLAY = loadImage('assets/icons8-circled-play-30.png')
 }
 
 // Initialise canvas and globals
@@ -57,18 +55,15 @@ function setupGui() {
 
   // TODO Create editor mode/viewer mode
 
-  GUI_WAVE = createGui("Wave")
-  GUI_WAVE.setPosition(GUI_PADDING, GUI_PADDING)
-  GUI_WAVE.prototype.addDropDown('type', WAVE_TYPES, setWave)
+  GUI_WAVE = createControlPanel("Wave", GUI_PADDING, GUI_PADDING)
+  GUI_WAVE.addDropDown('type', WAVE_TYPES, setWave)
   GUI_WAVE.addObject(WAVE_CONFIG)
 
-  GUI_PARTICLES = createGui("Particles")
-  GUI_PARTICLES.setPosition(GUI_WIDTH + 2*GUI_PADDING, GUI_PADDING)
-  GUI_PARTICLES.prototype.addDropDown('type', PARTICLE_TYPES, setParticleEmitter)
+  GUI_PARTICLES = createControlPanel("Particles", GUI_WIDTH + 2 * GUI_PADDING, GUI_PADDING)
+  GUI_PARTICLES.addDropDown('type', PARTICLE_TYPES, setParticleEmitter)
   GUI_PARTICLES.addObject(PARTICLE_CONFIG)
 
-  GUI_BACKGROUND = createGui("Background")
-  GUI_BACKGROUND.setPosition(2*GUI_WIDTH+ 3*GUI_PADDING, GUI_PADDING)
+  GUI_BACKGROUND = createControlPanel("Background", 2 * GUI_WIDTH + 3 * GUI_PADDING, GUI_PADDING)
   GUI_BACKGROUND.addObject(BG_CONFIG)
 
   // TODO credit icons8.com for icon
